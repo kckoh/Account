@@ -16,6 +16,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -255,6 +258,52 @@ class AccountServiceTest {
         AccountException accountException = assertThrows(AccountException.class, () -> accountService.deleteAccount(1L, "1234567890"));
 //        then
         assertEquals(ErrorCode.ACCOUNT_ALREDAY_REGISTERED, accountException.getErrorCode());
+
+    }
+
+    @Test
+    void successGetAccountByUserid(){
+        //given
+        AccountUser ac = AccountUser.builder()
+                .id(1L)
+                .name("hello")
+                .createdAt(LocalDateTime.now()).updatedAt(LocalDateTime.now()).build();
+
+        List<Account> accounts = Arrays.asList(
+                Account.builder().accountNumber("1234567890").balance(1000L).build(),
+                Account.builder().accountNumber("1234567891").balance(2000L).build()
+        );
+
+        given(accountUserRepository.findById(anyLong())).willReturn(Optional.of(ac));
+        given(accountRepository.findByAccountUser(any())).willReturn(accounts);
+
+
+        //when
+        List<AccountDto> accountDtos = accountService.getAccoutsByUserId(1L);
+
+        //then
+        assertEquals(3, accountDtos.size());
+        assertEquals("1234567890", accountDtos.get(0).getAccountNumber());
+        assertEquals(1000L, accountDtos.get(0).getBalance());
+
+        assertEquals("1234567891", accountDtos.get(1).getAccountNumber());
+        assertEquals(2000L, accountDtos.get(1).getBalance());
+
+    }
+    @Test
+    void failGetAccountByUserid(){
+        //given
+        given(accountUserRepository.findById(anyLong())).willReturn(Optional.empty());
+
+
+
+        //when
+
+
+        //        when
+        AccountException accountException = assertThrows(AccountException.class, () -> accountService.getAccoutsByUserId(1L));
+//        then
+        assertEquals(ErrorCode.USER_NOT_FOUND, accountException.getErrorCode());
 
     }
 
