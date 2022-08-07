@@ -74,7 +74,7 @@ public class AccountService {
             throw new AccountException(USER_ACCOUNT_UNMATCH);
         }
         if (account.getAccountStatus() == AccountStatus.UNREGISTERED) {
-            throw new AccountException(ACCOUNT_ALREDAY_REGISTERED);
+            throw new AccountException(ACCOUNT_ALREDAY_UNREGISTERED);
         }
         if (account.getBalance() > 0) {
             throw new AccountException(BALANCE_NOT_EMPTY);

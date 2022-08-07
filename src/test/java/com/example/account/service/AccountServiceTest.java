@@ -257,7 +257,7 @@ class AccountServiceTest {
         //        when
         AccountException accountException = assertThrows(AccountException.class, () -> accountService.deleteAccount(1L, "1234567890"));
 //        then
-        assertEquals(ErrorCode.ACCOUNT_ALREDAY_REGISTERED, accountException.getErrorCode());
+        assertEquals(ErrorCode.ACCOUNT_ALREDAY_UNREGISTERED, accountException.getErrorCode());
 
     }
 
