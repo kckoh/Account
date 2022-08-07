@@ -27,7 +27,7 @@ public class UseBalance {
         @NotNull
         @Min(10)
         @Max(1000_000_000)
-        private Long initialBalance;
+        private Long amount;
     }
 
     @Getter
@@ -39,9 +39,21 @@ public class UseBalance {
 
         private String accountNumber;
         private TransactionResultType transactionResultType;
+        private String transactionId;
         private Long amount;
         private LocalDateTime transactedAt;
 
 
+
+        public static Response from(TransactionDto transactionDto)  {
+                return Response.builder()
+                        .accountNumber(transactionDto.getAccoutNumber())
+                        .transactionResultType(transactionDto.getTransactionResultType())
+                        .transactionId(transactionDto.getTranscationId())
+                        .transactedAt(transactionDto.getTransactedAt())
+                        .amount(transactionDto.getAmount())
+                        .build();
+
+        }
     }
 }
