@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.example.account.type.TransactionType.USE;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -99,24 +100,27 @@ class TransactionControllerTest {
     @Test
     void successGetAccountsByUserId() throws Exception {
         //given
-        List<AccountDto> accountDtos = Arrays.asList(
-                AccountDto.builder().accountNumber("1234567890").balance(1000L).build(),
-                AccountDto.builder().accountNumber("1234567891").balance(2000L).build(),
-                AccountDto.builder().accountNumber("1234567892").balance(3000L).build()
-        );
-        given(accountService.getAccoutsByUserId(anyLong()))
-                .willReturn(accountDtos);
+
+        given(transactionService.queryTransaction(anyString()))
+                .willReturn(TransactionDto
+                        .builder()
+                        .transactionType(USE)
+                        .accoutNumber("1234567890")
+                        .transactedAt(LocalDateTime.now())
+                        .amount(3000L)
+                        .transcationId("id")
+                        .transactionResultType(TransactionResultType.S)
+                        .build());
         //when
 
         //then
-        mockMvc.perform(get("/account?user_id=1"))
+        mockMvc.perform(get("/transaction/id"))
                 .andDo(print())
-                .andExpect(jsonPath("$[0].accountNumber").value("1234567890"))
-                .andExpect(jsonPath("$[1].accountNumber").value("1234567891"))
-                .andExpect(jsonPath("$[2].accountNumber").value("1234567892"))
-                .andExpect(jsonPath("$[0].balance").value(1000L))
-                .andExpect(jsonPath("$[1].balance").value(2000L))
-                .andExpect(jsonPath("$[2].balance").value(3000L));
+                .andExpect(jsonPath("$.accountNumber").value("1234567890"))
+                .andExpect(jsonPath("$.transactionId").value("id"))
+                .andExpect(jsonPath("$.transactionType").value("USE"))
+                .andExpect(jsonPath("$.transactionResultType").value("S"))
+                .andExpect(jsonPath("$.amount").value(3000L));
 
     }
 

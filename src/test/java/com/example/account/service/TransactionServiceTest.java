@@ -496,6 +496,57 @@ class TransactionServiceTest {
     }
 
 
+    @Test
+    void successQueryTransaction(){
+        //given
+        AccountUser user = AccountUser.builder().id(12L).name("hello").build();
+
+        Account account = Account.builder()
+                .id(1L)
+                .accountUser(user)
+                .accountStatus(AccountStatus.IN_USE)
+//                .accountNumber("1000000012")
+                .balance(10000L)
+                .build();
+        given(transactionRepository.findByTranscationId(anyString()))
+                .willReturn(Optional.of(
+                        Transaction.builder()
+                                .account(account)
+                                .transactionType(CANCEL)
+                                .transactionResultType(S)
+                                .transcationId("id")
+                                .transactedAt(LocalDateTime.now().minusYears(2))
+                                .balanceSnapshot(10000L)
+                                .amount(2000L)
+                                .build()
+                ));
+        //when
+        TransactionDto transactionDto = transactionService.queryTransaction(anyString());
+        //then
+        assertEquals(CANCEL, transactionDto.getTransactionType());
+        assertEquals(S, transactionDto.getTransactionResultType());
+        assertEquals("id", transactionDto.getTranscationId());
+        assertEquals(2000L, transactionDto.getAmount());
+    }
+
+    @Test
+    @DisplayName("원 거래 없음 - 잔액 조회 실패")
+    void queryTranslation_TransactionNotFound() {
+//        given
+        AccountUser user = AccountUser.builder().id(12L).name("hello").build();
+        given(transactionRepository.findByTranscationId(any()))
+                .willReturn(Optional.empty());
+
+
+
+//        when
+        AccountException accountException = assertThrows(AccountException.class, () -> transactionService.queryTransaction("id"));
+//        then
+        assertEquals(ErrorCode.TRANSACTION_NOT_FOUND, accountException.getErrorCode());
+
+    }
+
+
 
 
 }
