@@ -270,8 +270,8 @@ class AccountServiceTest {
                 .createdAt(LocalDateTime.now()).updatedAt(LocalDateTime.now()).build();
 
         List<Account> accounts = Arrays.asList(
-                Account.builder().accountNumber("1234567890").balance(1000L).build(),
-                Account.builder().accountNumber("1234567891").balance(2000L).build()
+                Account.builder().accountUser(ac).accountNumber("1234567890").balance(1000L).build(),
+                Account.builder().accountUser(ac).accountNumber("1234567891").balance(2000L).build()
         );
 
         given(accountUserRepository.findById(anyLong())).willReturn(Optional.of(ac));
@@ -282,7 +282,7 @@ class AccountServiceTest {
         List<AccountDto> accountDtos = accountService.getAccoutsByUserId(1L);
 
         //then
-        assertEquals(3, accountDtos.size());
+        assertEquals(2, accountDtos.size());
         assertEquals("1234567890", accountDtos.get(0).getAccountNumber());
         assertEquals(1000L, accountDtos.get(0).getBalance());
 

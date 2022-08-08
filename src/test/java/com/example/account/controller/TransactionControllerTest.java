@@ -1,5 +1,6 @@
 package com.example.account.controller;
 
+import com.example.account.dto.AccountDto;
 import com.example.account.dto.CancelBalance;
 import com.example.account.dto.TransactionDto;
 import com.example.account.dto.UseBalance;
@@ -15,10 +16,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -89,6 +93,31 @@ class TransactionControllerTest {
 
 
         //then
+    }
+
+
+    @Test
+    void successGetAccountsByUserId() throws Exception {
+        //given
+        List<AccountDto> accountDtos = Arrays.asList(
+                AccountDto.builder().accountNumber("1234567890").balance(1000L).build(),
+                AccountDto.builder().accountNumber("1234567891").balance(2000L).build(),
+                AccountDto.builder().accountNumber("1234567892").balance(3000L).build()
+        );
+        given(accountService.getAccoutsByUserId(anyLong()))
+                .willReturn(accountDtos);
+        //when
+
+        //then
+        mockMvc.perform(get("/account?user_id=1"))
+                .andDo(print())
+                .andExpect(jsonPath("$[0].accountNumber").value("1234567890"))
+                .andExpect(jsonPath("$[1].accountNumber").value("1234567891"))
+                .andExpect(jsonPath("$[2].accountNumber").value("1234567892"))
+                .andExpect(jsonPath("$[0].balance").value(1000L))
+                .andExpect(jsonPath("$[1].balance").value(2000L))
+                .andExpect(jsonPath("$[2].balance").value(3000L));
+
     }
 
 }
