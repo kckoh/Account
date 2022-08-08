@@ -78,8 +78,8 @@ public class TransactionService {
     }
 
     public TransactionDto cancelBalance(String transactionId, String accountNumber, Long amount) {
-        Account account = accountRepository.findByAccountNumber(accountNumber).orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
         Transaction transaction = transactionRepository.findByTranscationId(transactionId).orElseThrow(() -> new AccountException(ErrorCode.TRANSACTION_NOT_FOUND));
+        Account account = accountRepository.findByAccountNumber(accountNumber).orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
         validateCancelBalance(transaction, account, amount);
         account.cancelBalance(amount);
 
